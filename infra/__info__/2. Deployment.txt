@@ -1,0 +1,57 @@
+              -----------------------
+              |     Deployment      |
+              -----------------------
+                        |
+    --------------------|--------------------
+    |                   |                   |
+----------          ----------          ----------
+|  Pod   |          |  Pod   |          |  Pod   |
+----------          ----------          ---------- 
+
+Deployment - объект kubernetes преднасначен для управления pods
+Все pods описаные в deployment - одинаковые
+Делает 2 задачи:
+  - автоматически возобновляет работу pod который вышел из строя, гарантирует запуск указанного количества pods
+  - управляет обновлением pods (V1 --> V2)
+_____________________________________________________________________________________________________________
+file: posts-depl.yaml
+_____________________________________________________________________________________________________________
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: posts-depl                      -- название deployment-а
+spec: 
+  replicas: 1                           -- количество pods конкретного image которые создаются в deployment
+  selector:                             -- указание какими pods нужно управлять
+    matchLabels:
+      app: posts                        -- пара ключ - значение (может быть любой)
+  template:                             -- конфигурация тех pods которые нужно создать в deployment
+    metadata:
+      labels:
+        app: posts                      -- имя pod который создастся и которым нужно управлять  // указывается в service.yaml
+    spec:
+      containers:
+        - name: posts                   -- имя контейнера который запустится внутри POD 
+          image: [dockerId]/posts        -- image на основании которого создастся контейнера (:latest version)
+_____________________________________________________________________________________________________________
+
+Создать Deployment:
+$ kubectl apply -f post-depl.yaml
+
+Список Deployments:
+$ kubectl get deployment
+
+Удалить:
+$ kubectl delete deployment posts-depl 
+(после удаления deployment все связанные pods будут удалены)
+
+Описание (при debug):
+$ kubectl describe deployment posts-depl
+
+_____________________________________________________________________________________________________________
+Обновить Deployment: 
+  - не указывать точную версию, оставлять пусто или :latest
+  - обновить код в микросервисе
+  - $ docker build -t ticketing/posts .
+  - push image to docker hub (docker push [dockerId]/posts)
+  - $ kubectl rollout restart deployment [depl_name]

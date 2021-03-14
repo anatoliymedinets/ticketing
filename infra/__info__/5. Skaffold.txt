@@ -1,0 +1,41 @@
+https://skaffold.dev/
+
+install chocolatey - https://docs.chocolatey.org/en-us/choco/setup
+install skaffold   - https://skaffold.dev/docs/install/
+
+_____________________________________________________________________________________
+skaffold.yaml
+_____________________________________________________________________________________
+apiVersion: skaffold/v2alpha3
+kind: Config
+deploy:
+  kubectl:
+    manifests:
+      - ./infra/k8s/*
+build:
+  local:
+    push: false
+  artifacts:
+    - image: [dockerId]/auth
+      context: auth
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: 'src/**/*.ts'
+            dest: .
+    - image: [dockerId]/client
+      context: client
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: 'src/**/*.ts'
+            dest: .
+_____________________________________________________________________________________
+
+Запуск (в проекте где находится файл skaffold.yaml):
+$ skaffold dev
+$ skaffold dev --no-prune=false --cache-artifacts=false
+
+Stop skaffold - Ctrl + C (очистит кластер) OR $ skaffold delete

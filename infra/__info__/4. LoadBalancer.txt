@@ -1,0 +1,57 @@
+Browser                        Cloud Provider (AWS, GC, Azure)
+------------------             ----------------------------------------------------------------------------                                           
+                 |             |                                                       ---------          | 
+                 |             |                                         |-->ClusterIP-|  POD  |          |
+                 |             |                                         |             ---------          |
+                 |   -------------------------   ----------------------  |             ---------          |
+App in browser --|-->| Load Balancer Service |-->| Ingress Controller |--|-->ClusterIP-|  POD  |          |
+                 |   -------------------------   ----------------------  |             ---------          | 
+                 |             |                                         |             ---------          |
+                 |             |                                         |-->ClusterIP-|  POD  |          | 
+                 |             |                                                       ---------          | 
+------------------             ----------------------------------------------------------------------------                
+Load Balanser Service - собрать весь трафик в один pod
+Ingerss Controller - содержит набор правил маршрутизации, которые будут распределять трафик на другие службы внутри кластера
+
+* ingress-nginx   https://kubernetes.github.io/ingress-nginx/deploy/
+1) установить
+2) Написать config файл для маршрутов
+_____________________________________________________________________________
+ingress-srv.yaml (for Ingress Controller)
+_____________________________________________________________________________
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: ingress-srv
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/use-regex: 'true'   -- для 42 строки
+  spec:
+    rules:
+      - host: posts.com                             -- для dev добавить домен в host file
+        htto:
+          paths:
+            - path: /posts/create
+              backend:
+                serviceName: posts-srv              -- название ClusterIP сервиса
+                servicePort: 4000                   -- значение port в posts-srv
+            - path: /posts
+              backend:
+                serviceName: query-srv
+                servicePort: 4001
+            - path: /posts/?(.*)/comments           -- регулярное выражение вместо :id
+              backend:
+                serviceName: comments-srv
+                servicePort: 4002
+            - path: /?(.*)                          -- client (всегда в конце)
+              backend:
+                serviceName: client-srv
+                servicePort: 3000
+_____________________________________________________________________________
+3) $ kubectl apply -f ingress-srv.yaml
+
+(i) Host File Location
+Windows ---> C:\Windows\System32\Drivers\etc\hosts
+MacOS/Linux ---> / etc/hosts
+
+
