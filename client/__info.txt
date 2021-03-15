@@ -1,0 +1,6 @@
+In browser (if cert warning)
+thisisunsafe
+
+Change
+$ kubectl get pods
+$ kubectl delete pod [podId]

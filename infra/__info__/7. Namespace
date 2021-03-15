@@ -1,0 +1,18 @@
+Cross namespace communication
+$ kubectl get namespace
+$ kubectl get services -n ingress-nginx
+(Сервис TYPE LoadBalancer)
+-----------------------------------------------------------------------------------------------------------
+--------------------------                                                   --------------------------   |
+     'ingress-nginx'     |                                                   |  'default' namespace   |   |    
+        namespace        |                                                   |                        |   |
+                         |                                                   |  ClusterIP Clinet      |   |
+   -----------------     |  http://NAMEOFSERVICE.NAMESPACE.svc.cluster.local | || ExtNameSrv |        |   |
+   | Ingress Nginx | <---|---------------------------------------------------|----------------        |   |
+   -----------------     |                         |                         |  ClusterIP Auth Pod    |   |
+                         |                         |                         |                        |   |
+--------------------------                         |                         --------------------------   |
+                      "http://ingress-nginx-controller.ingress-nginx.svc.cluster.local"                   |
+-----------------------------------------------------------------------------------------------------------
+
+!!! Можно настроить External Name Service
