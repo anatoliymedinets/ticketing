@@ -2,9 +2,7 @@ import express from 'express';
 require('express-async-errors');
 import { json } from 'body-parser';
 import cookieSession from 'cookie-session'
-
-import { errorHandler } from './middlewares/error-handler'
-import { NotFoundError } from './errors/not-found-error';
+import { errorHandler, NotFoundError } from '@amedtickets/common'
 
 import { signinRouter } from './routes/signin';
 import { signoutRouter } from './routes/signout';

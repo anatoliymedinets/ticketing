@@ -1,10 +1,9 @@
 import { Router, Request, Response } from 'express';
 import { body } from 'express-validator'
 import jwt from 'jsonwebtoken'
+import { validateRequest, ConflictError } from '@amedtickets/common';
 
 import { User } from '../models/user'
-import { ConflictError } from '../errors/conflict-error';
-import { validateRequest } from '../middlewares/validat-request';
 
 const router = Router();
 
