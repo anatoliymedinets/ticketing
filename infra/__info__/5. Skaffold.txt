@@ -39,3 +39,4 @@ $ skaffold dev
 $ skaffold dev --no-prune=false --cache-artifacts=false
 
 Stop skaffold - Ctrl + C (очистит кластер) OR $ skaffold delete
+(skaffold не удаляет deployments после остановки $ kubectl delete --all deployments)

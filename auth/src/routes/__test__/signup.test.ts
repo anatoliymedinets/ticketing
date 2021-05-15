@@ -54,6 +54,7 @@ it('disallows duplicate emails', async () => {
       email: 'test@test.com',
       password: 'password'
     })
+    .expect(201);
 
   await request(app)
     .post('/api/users/signup')
