@@ -1,0 +1,37 @@
+1. $ npm i node-nats-streaming ts-node-dev typescript @types/node
+
+2. Open redirect on pod nats-streaming:             local :pod
+   $ kubectl port-forward nats-delp-6d66bf9f84-plsxr 4222:4222
+
+          Publisher                                        NATS Streaming
+  --------------------------                       ------------------------------
+  |            Subject     |                       |                            |
+  | data   ticket:created  |                       | -------------------------- |
+  |  |____________|        |                       | |    List of channels    | |
+  |         |              |                       | |------------------------| |
+  |     stan client -------------------------------->|  --------------------  | |
+  |                        |         --------------->|  |  ticket:created  |  | |
+  --------------------------         |             | |  | ---------------- |  | |
+                                     |             | |  | | Queue Group  | |  | |
+                                     |             | |  | ---------------- |  | |
+                                     |             | |  |Durable Subscript |  | |  options .setDurableName('lestentr-service')     
+                                     |             | |  --------------------  | |
+                                     |             | -------------------------- |
+                                     |             |                            |
+           Listener                  |             | -------------------------- |
+  --------------------------         |             | |    List of clients     | |
+  |     ticket:created     |         |             | |------------------------| |
+  |           |            |         |             | | PublisherId            | |
+  |       stan client      |         |             | | ListenerId             | |
+  |           |            |         |             | |                        | |
+  |      subscription  ---------------             | -------------------------- |
+  |                        |                       |                            |
+  --------------------------                       | -------------------------- |
+                                                   | |    Events History      | |  options .setDeliverAllAvailable()
+                                                   | |                        | |
+                                                   | |                        | |
+                                                   | -------------------------- |
+                                                   ------------------------------
+
+  Subject - name of channel
+  * data  - (message) should be a string!
