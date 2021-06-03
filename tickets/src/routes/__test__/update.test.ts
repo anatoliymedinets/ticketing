@@ -1,7 +1,8 @@
 import request from 'supertest'
 import mongoose from 'mongoose'
+
 import { app } from '../../app'
-import { Ticket } from '../../models/ticket'
+import { natsWrapper } from '../../nats-wrapper'
 
 it('returns a status other than 401 if the user is signed in', async () => {
   const response = await request(app)
@@ -113,4 +114,27 @@ it('updates the ticket provided valid inputs', async () => {
 
   expect(updatedTicket.body.title).toEqual(title)
   expect(updatedTicket.body.price).toEqual(price)
+})
+
+it('publishes an event', async () => {
+  const currentUserCookie = global.signin()
+
+  const response = await request(app)
+    .post(`/api/tickets`)
+    .set('Cookie', currentUserCookie)
+    .send({
+      title: 'new',
+      price: 20
+    })
+
+  const title = 'update';
+  const price = 15;
+
+  await request(app)
+    .put(`/api/tickets/${response.body.id}`)
+    .set('Cookie', currentUserCookie)
+    .send({ title, price })
+    .expect(200)
+
+  expect(natsWrapper.client.publish).toHaveBeenCalled();
 })

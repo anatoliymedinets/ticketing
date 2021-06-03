@@ -13,6 +13,8 @@ declare global {
   }
 }
 
+jest.mock('../nats-wrapper')
+
 process.env.NODE_ENV = 'test' // jest don't set by default NODE_ENV 'test'
 let mongo: MongoMemoryServer;
 
@@ -29,6 +31,7 @@ beforeAll(async () => {
 })
 
 beforeEach(async () => {
+  jest.clearAllMocks()
   const collections = await mongoose.connection.db.collections()
 
   for (let collection of collections) {
